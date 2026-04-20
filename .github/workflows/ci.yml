@@ -1,0 +1,61 @@
+name: SIGA KMP CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - uses: gradle/actions/setup-gradle@v3
+      
+      - run: chmod +x ./gradlew
+      # 'unsigned' até configurar o Keystore
+      - run: ./gradlew :app:assembleRelease
+      
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: app/build/outputs/apk/release/*.apk
+
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+      - uses: gradle/actions/setup-gradle@v3
+      
+      - run: chmod +x ./gradlew
+      
+      - run: ./gradlew :shared:assemble
+
+
+      # - run: xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -sdk iphonesimulator -configuration Release build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+  release:
+    needs: [build-android, build-ios]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-release-apk
+          path: apk/
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: apk/**/*.apk
+          generate_release_notes: true
