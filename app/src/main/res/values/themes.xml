@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.SIGA" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">#FFFFFF</item>
+    </style>
+
+    <style name="Theme.SIGA" parent="Base.Theme.SIGA" />
+</resources>

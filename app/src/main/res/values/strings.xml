@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SIGA</string>
+    <string name="acesso_ao_sistema">Acesso ao Sistema</string>
+    <string name="logo_app">LOGO APP</string>
+    <string name="nome_do_ambiente">Nome do ambiente</string>
+    <string name="entrar">Entrar</string>
+</resources>
